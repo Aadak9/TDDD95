@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <algorithm>
 
 bool is_palindrome_possible(std::string input)
 {
@@ -43,11 +44,50 @@ bool is_palindrome_possible(std::string input)
 
 }
 
-int number_of_switches(std::string input)
+int swaps_to_be_made(std::string input)
 {   
-    int switches = 0;
+    int swaps = 0;
+    int n = input.size();
 
-    return switches;
+    int left_edge_tracker = 0;
+    int right_edge_tracker = n - 1;
+
+    while(left_edge_tracker < right_edge_tracker)
+    {
+        if (input[left_edge_tracker] == input[right_edge_tracker])
+        {
+            left_edge_tracker++;
+            right_edge_tracker--;
+            //continue;
+        }
+        else
+        {
+            int k = right_edge_tracker;
+            while (k > left_edge_tracker && input[k] != input[left_edge_tracker])
+            {
+                k--;
+            }
+            if (k == left_edge_tracker)
+            {
+                std::swap(input[left_edge_tracker], input[left_edge_tracker + 1]);
+                swaps++;
+            }
+            else
+            {
+                while (k < right_edge_tracker)
+                {
+                    std::swap(input[k], input[k + 1]);
+                    k++;
+                    swaps++;
+                }
+                left_edge_tracker++;
+                right_edge_tracker--;
+            }
+        }
+    }
+    
+
+    return swaps;
 }
 
 
@@ -55,16 +95,16 @@ int main()
 {
     int n;
     std::cin >> n;
-    std::string input;
+    std::cin.ignore();
     for (int i = 0; i < n; i++)
     {
-        std::cin >> input;
+        std::string input;
+        std::getline(std::cin, input);
 
         if (is_palindrome_possible(input))
         {
-            //int switches = number_of_switches(input);
-            //std::cout << switches << '\n';
-            std::cout << "Possible" << '\n';
+            int swaps = swaps_to_be_made(input);
+            std::cout << swaps << '\n';
         }
         else
         {
