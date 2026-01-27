@@ -28,41 +28,56 @@ struct Object
     int value;
     int weight;
 };
-
+// Function to solve the 0/1 Knapsack problem using dynamic programming.
+// Returns a vector of indices of the chosen objects that maximize the total value
+// without exceeding the given capacity.
 std::vector<int> knapsack(int capacity, const std::vector<Object>& objects)
 {
     int rows = objects.size();
     int columns = capacity;
 
+    // Create a DP table with (rows + 1) x (columns + 1) dimensions
+    // dp[i][j] will store the maximum value achievable with the first i objects
+    // and total weight ≤ j
     std::vector<std::vector<int>> dp(rows + 1, std::vector<int>(columns + 1, 0));
 
     for (int i = 1; i <= rows; i++)
     {
         for (int j = 1; j <= columns; j ++)
-        {
+        {   
+            // If the current object's weight fits in the remaining capacity
             if (objects[i-1].weight <= j)
             {
+                // Compare the two choices for the current object:
+                // 1) Skip it: the maximum value stays the same as without this object (dp[i-1][j])
+                // 2) Include it: add its value to the maximum value achievable with the remaining capacity
+                // (dp[i-1][j - objects[i-1].weight] + objects[i-1].value)
+                // Take the maximum of these two options and store it in dp[i][j]
                 dp[i][j] = std::max(dp[i-1][j], dp[i-1][j - objects[i-1].weight] + objects[i-1].value);
             }
             else
-            {
+            {   
+                // Current object is too heavy, skip it
                 dp[i][j] = dp[i-1][j];
             }
         }
     }
+    // Backtrack to find which objects were chosen
     std::vector<int> chosen_items;
     int i = rows;
     int j = columns;
 
     while(i > 0 && j > 0)
     {
+        // If the value changed from the previous row, this object was included
         if (dp[i][j] != dp[i-1][j])
         {
-            chosen_items.push_back(i-1);
-            j -= objects[i-1].weight;
+            chosen_items.push_back(i-1);// Add object index to chosen list
+            j -= objects[i-1].weight;// Reduce remaining capacity
         }
-        i--;
+        i--;// Move to the previous object
     }
+    // Reverse the order so that the objects appear in the original input order
     std::reverse(chosen_items.begin(), chosen_items.end());
     return chosen_items;
 }
