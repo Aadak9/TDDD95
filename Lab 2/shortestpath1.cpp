@@ -120,7 +120,7 @@ int main()
             else
             {
                 std::cout << result.dist[target] << '\n';
-
+                /*
                 std::vector<int> path = build_path(target, result.parent);
 
                 for (std::size_t j = 0; j < path.size(); j++)
@@ -132,6 +132,7 @@ int main()
                     }
                 }
                 std::cout << '\n';
+                */
             }
         }
 

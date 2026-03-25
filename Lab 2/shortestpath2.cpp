@@ -41,8 +41,8 @@ DijkstraResult dijkstra(int n, int start, const std::vector<std::vector<Edge>> &
 
     std::priority_queue<std::pair<long long, int>, std::vector<std::pair<long long, int>>, std::greater<std::pair<long long, int>>> pq;
 
-    dist[start] = start;   // start at node s at time s
-    pq.push(std::make_pair(start, start));
+    dist[start] = 0;   
+    pq.push({0, start});
 
     while (!pq.empty())
     {
@@ -158,7 +158,7 @@ int main()
             else
             {
                 std::cout << result.dist[target] << "\n";
-
+                /*
                 std::vector<int> path = build_path(target, result.parent);
 
                 for (std::size_t j = 0; j < path.size(); j++)
@@ -170,7 +170,9 @@ int main()
                     }
                 }
                 std::cout << "\n";
+                */
             }
+                
         }
 
         std::cout << "\n";
