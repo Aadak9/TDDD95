@@ -1,15 +1,33 @@
 /*
 Author: Andreas Nordström, andno773
 
-Problem description: 
+Problem description: Given a directed weighted graph, answer multiple shortest path queries
+from a given start node to different target nodes. If a node is not
+reachable, output "Impossible".
 
-Algorithm: 
+Algorithm: Dijkstra's algorithm with a priority queue (min-heap) to compute
+the shortest distance from the start node to all other nodes in the graph.
+The graph is represented as an adjacency list.
+
+We also store parent pointers to reconstruct paths if needed.
 
 
-Time complexity: 
+Time complexity: - Dijkstra: O((n + m) log n)
+  where n = number of nodes, m = number of edges
+- Each query: O(1) after preprocessing
 
 
-Usage: 
+Usage: Input consists of multiple test cases.
+For each test case:
+- n = number of nodes
+- m = number of edges
+- q = number of queries
+- start = starting node
+
+Then m lines of edges: u v w (edge from u to v with weight w)
+Then q lines of queries: target node
+
+Ends when n = m = q = start = 0
 */
 
 #include <iostream>
@@ -42,6 +60,7 @@ DijkstraResult dijkstra(int n, int start, const std::vector<std::vector<std::pai
         int node = pq.top().second;
         pq.pop();
 
+        //Skip outdated entries
         if (currentDistance > dist[node])
         {
             continue;
@@ -67,6 +86,7 @@ DijkstraResult dijkstra(int n, int start, const std::vector<std::vector<std::pai
     return result;
 }
 
+//Reconstruct path from start to target using parent array
 std::vector<int> build_path(int target, const std::vector<int> &parent)
 {
     std::vector<int> path;
@@ -75,7 +95,7 @@ std::vector<int> build_path(int target, const std::vector<int> &parent)
     while (node != -1)
     {
         path.push_back(node);
-        node = parent[node];
+        node = parent[node]; //move backwards
     }
 
     std::reverse(path.begin(), path.end());

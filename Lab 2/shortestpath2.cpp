@@ -1,15 +1,54 @@
 /*
 Author: Andreas Nordström, andno773
 
-Problem description: 
+Problem description: We are given a directed graph where each edge represents a time-dependent
+connection. Each edge (u → v) has:
+- t0: the first time the edge can be used
+- p: the period (how often the edge repeats)
+- w: the travel time
 
-Algorithm: 
+From a given start node, we must answer multiple queries asking for the
+earliest arrival time to different target nodes. If a node is unreachable,
+output "Impossible".
+
+Algorithm: A modified version of Dijkstra’s algorithm is used where the “distance”
+represents time instead of cost.
+
+The key difference is that edges are time-dependent. For each node,
+when processing it at time t, the earliest possible departure time for
+each outgoing edge must be determined.
+
+- If t ≤ t0, the edge can be taken at time t0.
+- If t > t0:
+  - If p = 0, the edge is no longer usable.
+  - Otherwise, wait until the smallest time of the form t0 + k*p that is ≥ t.
+
+After computing the departure time, the travel time w is added to get
+the arrival time at the next node. If this improves the known best time,
+the value is updated and pushed into the priority queue.
+
+The process continues until all reachable nodes have their shortest
+arrival times determined.
 
 
-Time complexity: 
+Time complexity: The algorithm runs in O((n + m) log n), just like standard Dijkstra.
+Each edge relaxation only does a few constant-time calculations, so it
+doesn’t change the overall complexity. Queries are answered in constant time.
 
 
-Usage: 
+Usage: Input consists of multiple test cases.
+For each test case:
+- n = number of nodes
+- m = number of edges
+- q = number of queries
+- start = starting node
+
+Then m lines:
+u v t0 p w
+
+Then q queries: target node
+
+Ends when n = m = q = start = 0
 */
 
 #include <iostream>
@@ -63,22 +102,23 @@ DijkstraResult dijkstra(int n, int start, const std::vector<std::vector<Edge>> &
 
             if (currentTime <= e.t0)
             {
-                // We can catch the first available time
+                //We can catch the first available time
                 nextDeparture = e.t0;
             }
             else
             {
                 if (e.p == 0)
                 {
-                    // Only usable exactly at t0, and we are too late
+                    //Only usable exactly at t0, and we are too late
                     continue;
                 }
 
-                // Wait until t0 + k*p >= currentTime
+                //Wait until t0 + k*p >= currentTime
                 long long k = (currentTime - e.t0 + e.p - 1) / e.p;
                 nextDeparture = e.t0 + k * e.p;
             }
 
+             //Arrival time after taking the edge
             long long arrival = nextDeparture + e.w;
 
             if (arrival < dist[e.to])

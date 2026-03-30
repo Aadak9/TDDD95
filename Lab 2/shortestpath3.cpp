@@ -1,15 +1,45 @@
 /*
 Author: Andreas Nordström, andno773
 
-Problem description: 
+Problem description: Bellman-Ford is used to find shortest paths from the start node.
+All edges are relaxed repeatedly (n−1 times), which is enough to
+propagate the correct shortest distances as long as there are no
+negative cycles involved.
 
-Algorithm: 
+After that, one more pass over the edges is done. If a distance can
+still be improved, it means there is a negative cycle affecting that node.
+
+Those nodes are then put into a queue, and a simple traversal is used
+to mark every node that can be reached from them. All such nodes are
+treated as having distance −inf.
+
+Algorithm: Bellman-Ford is used to compute shortest paths. First, all edges are
+relaxed n−1 times to find shortest distances.
+
+After that, edges are checked once more to detect nodes that can still
+be improved. These nodes are part of, or reachable from, a negative cycle.
+
+A BFS/propagation step is then used to mark all nodes reachable from
+those cycles as having distance −inf.
 
 
-Time complexity: 
+Time complexity: The relaxation step runs in O(n * m). The extra pass for detecting
+negative cycles and the BFS propagation together take O(m + n).
+Overall complexity is O(n * m).
 
 
-Usage: 
+Usage: Input consists of multiple test cases.
+
+For each test case:
+- n = number of nodes
+- m = number of edges
+- q = number of queries
+- start = starting node
+
+Then m lines: u v w (edge from u to v with weight w)
+Then q queries: target node
+
+Ends when n = m = q = start = 0
 */
 
 #include <iostream>
@@ -29,7 +59,7 @@ struct BellmanFordResult
 {
     std::vector<long long> dist;
     std::vector<int> parent;
-    std::vector<bool> neg_inf;
+    std::vector<bool> neg_inf; //true if node is affected by negative cycle
 };
 
 BellmanFordResult bellman_ford(int n, int start, const std::vector<Edge> &edges)
@@ -48,7 +78,7 @@ BellmanFordResult bellman_ford(int n, int start, const std::vector<Edge> &edges)
         {
             if (dist[e.from] == INF)
             {
-                continue;
+                continue; //unreachable node
             }
 
             if (dist[e.from] + e.w < dist[e.to])
@@ -80,6 +110,7 @@ BellmanFordResult bellman_ford(int n, int start, const std::vector<Edge> &edges)
         int u = q.front();
         q.pop();
 
+        //Detect nodes that can still be relaxed → part of negative cycle
         for (const Edge &e : edges)
         {
             if (e.from == u)

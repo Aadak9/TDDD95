@@ -1,15 +1,40 @@
 /*
 Author: Andreas Nordström, andno773
 
-Problem description: 
+Problem description: Given an undirected weighted graph, find a minimum spanning tree (MST).
+If the graph is not connected, output "Impossible".
+Otherwise, output the total weight of the MST and the edges used in it.
 
-Algorithm: 
+Algorithm: Kruskal’s algorithm is used to build the MST.
+All edges are sorted by weight, then processed in that order. For each edge,
+a Union-Find (Disjoint Set Union) structure is used to check whether the
+two endpoints already belong to the same component.
+- If they are in different components, the edge is added to the MST and
+  the two components are merged.
+- If they are already connected, the edge is skipped to avoid cycles.
+
+At the end, if exactly n−1 edges have been selected, the MST is complete.
+Otherwise, the graph is disconnected.
 
 
-Time complexity: 
+Time complexity: The edges are first sorted, which takes O(m log m).
+
+After that, the Union-Find operations are used to check and merge components.
+These operations run in almost constant time on average due to path compression
+and union by rank.
+
+Overall, the running time is O(m log m).
 
 
-Usage: 
+Usage: Input consists of multiple test cases.
+
+For each test case:
+- n = number of nodes
+- m = number of edges
+
+Then m lines: u v w (undirected edge between u and v with weight w)
+
+The input ends when n = 0 and m = 0
 */
 
 #include <iostream>
@@ -49,6 +74,7 @@ int find_set(int v)
     return parent[v] = find_set(parent[v]);
 }
 
+//Merge two sets if they are different
 bool union_sets(int a, int b)
 {
     a = find_set(a);
@@ -56,9 +82,10 @@ bool union_sets(int a, int b)
 
     if (a == b)
     {
-        return false;
+        return false; //already connected
     }
 
+    //Union by rank
     if (rnk[a] < rnk[b])
     {
         swap(a, b);
@@ -90,6 +117,7 @@ bool compute_mst(int n, vector<Edge> &edges, int &totalCost, vector<pair<int, in
 
     for (size_t i = 0; i < edges.size(); i++)
     {
+        //If edge connects two different components, include it
         if (union_sets(edges[i].u, edges[i].v))
         {
             totalCost += edges[i].w;
